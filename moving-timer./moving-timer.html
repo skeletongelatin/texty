@@ -28,10 +28,18 @@
   <script>
     const timer = document.getElementById('timer');
 
+    let mode = 'normal'; // normal, glitch, rightnow
     let normalStartTime = Date.now();
-    let isGlitching = false;
-    let isRightNow = false;
+    let glitchStartTime = 0;
+    let glitchBase = 0;
+    let glitchStep = 0;
+    let glitchSpeed = 50; // fast update speed during glitch
+    let cycleTimer = 0;
 
-    const glitchCycle = 15000; // every 15s, glitch happens
-    const glitchDuration = 5000; // glitch lasts 5s
-    const rightNowChance = 0.01; // 1% chance per se
+    let isRightNow = false;
+    let rightNowTimer = 0;
+
+    function formatTime(ms) {
+      const totalSeconds = Math.floor(ms / 1000);
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0'
