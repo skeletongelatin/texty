@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    .warp {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      pointer-events: none;
+      backdrop-filter: contrast(1.1) brightness(1.05);
+      animation: bulge 3s infinite ease-in-out;
+    }
+
+    @keyframes bulge {
+      0%, 100% {
+        transform: scale(1);
+        filter: none;
+      }
+      50% {
+        transform: scale(1.01);
+        filter: blur(0.4px) saturate(1.2);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="warp"></div>
+</body>
+</html>
