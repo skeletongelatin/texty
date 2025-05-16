@@ -2,8 +2,8 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Fixed Timer</title>
-  <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+  <title>VHS Timer</title>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
@@ -16,11 +16,9 @@
     }
 
     #timer {
-      font-size: 64px;
-      font-family: 'Special Elite', monospace;
+      font-size: 72px;
+      font-family: 'VT323', monospace;
       color: white;
-      font-weight: bold;
-      text-shadow: 2px 2px 6px rgba(0, 255, 255, 0.7), -2px -2px 6px rgba(255, 0, 255, 0.7);
     }
   </style>
 </head>
@@ -34,69 +32,6 @@
     let isGlitching = false;
     let isRightNow = false;
 
-    const glitchCycle = 15000; // total time between glitch start -> next glitch start
-    const glitchDuration = 5000; // glitch duration
-    const rightNowChance = 0.01; // chance to flash "RIGHT NOW" every second
-
-    let glitchStartTime = 0;
-    let glitchBase = 0; // random start value for glitch
-    let glitchSpeed = 100; // in ms per fake tick
-
-    function formatTime(ms) {
-      const totalSeconds = Math.floor(ms / 1000);
-      const hours = Math.floor(totalSeconds / 3600);
-      const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
-      const seconds = String(totalSeconds % 60).padStart(2, '0');
-      return `${hours}H${minutes}m${seconds}s`;
-    }
-
-    function updateTimer() {
-      if (isRightNow) return;
-
-      if (isGlitching) {
-        const elapsedGlitchMs = Date.now() - glitchStartTime;
-        const glitchSteps = Math.floor(elapsedGlitchMs / glitchSpeed);
-        const simulatedMs = glitchBase + glitchSteps * 1000;
-        timer.innerText = formatTime(simulatedMs);
-      } else {
-        const elapsedNormal = Date.now() - normalStartTime;
-        timer.innerText = formatTime(elapsedNormal);
-      }
-    }
-
-    function triggerGlitch() {
-      isGlitching = true;
-      glitchStartTime = Date.now();
-      glitchBase = Math.floor(Math.random() * 3600) * 1000; // Random seconds up to 1 hour
-      setTimeout(() => {
-        isGlitching = false;
-        normalStartTime = Date.now(); // Reset real timer after glitch
-        startGlitchCycle();
-      }, glitchDuration);
-    }
-
-    function maybeTriggerRightNow() {
-      if (!isRightNow && Math.random() < rightNowChance) {
-        isRightNow = true;
-        const prevColor = timer.style.color;
-        timer.innerText = "RIGHT NOW";
-        timer.style.color = '#FF0044';
-        setTimeout(() => {
-          isRightNow = false;
-          timer.style.color = prevColor;
-        }, 2000);
-      }
-    }
-
-    function startGlitchCycle() {
-      setTimeout(() => {
-        triggerGlitch();
-      }, glitchCycle - glitchDuration);
-    }
-
-    setInterval(updateTimer, 100);
-    setInterval(maybeTriggerRightNow, 1000);
-    startGlitchCycle();
-  </script>
-</body>
-</html>
+    const glitchCycle = 15000; // every 15s, glitch happens
+    const glitchDuration = 5000; // glitch lasts 5s
+    const rightNowChance = 0.01; // 1% chance per se
