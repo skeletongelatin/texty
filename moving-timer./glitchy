@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>VHS Timer</title>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: transparent;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    #timer {
+      font-size: 72px;
+      font-family: 'VT323', monospace;
+      color: white;
+      text-shadow: 0 0 2px white, 0 0 5px white;
+      animation: vhsFlicker 0.15s infinite;
+      white-space: nowrap;
+    }
+
+    @keyframes vhsFlicker {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.92; }
+      75% { opacity: 0.96; }
+    }
+
+    .glitch {
+      animation: glitchShift 0.1s infinite;
+    }
+
+    @keyframes glitchShift {
+      0%   { transform: translateX(0); }
+      25%  { transform: translateX(2px); }
+      50%  { transform: translateX(-2px); }
+      75%  { transform: translateX(1px); }
+      100% { transform: translateX(0); }
+    }
+  </style>
+</head>
+<body>
+  <div id="timer">0H00m00s</div>
+
+  <script>
+    const timer = document.getElementById('timer');
+
+    let mode = 'normal'; // normal, glitch
+    let normalStartTime = Date.now();
+    let cycleStartTime = Date.now();
+
+    let glitchStartTime = 0;
+    let glitchBase = 0;
+    let glitchElapsed = 0;
+
+    let isRightNow = false;
+    let rightNowStart = 0;
+
+    function formatTime(ms) {
+      const totalSeconds = Math.floor(ms / 1000);
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+      const seconds = String(totalSeconds % 60).padStart(2, '0');
+      return `${hours}H${minutes}m${seconds}s`;
+    }
+
+    function updateDisplay() {
+      const now = Date.now();
+
+      // Occasionally show "right now"
+      if (isRightNow) {
+        if (now - rightNowStart >= 2000) {
+          isRightNow = false;
+          normalStartTime = Date.now();
+          cycleStartTime = Date.now();
+        } else {
+          timer.classList.remove('glitch');
+          timer.innerText = "right now";
+          return;
+        }
+      } else if (Math.random() < 0.01 && mode !== 'glitch') {
+        isRightNow = true;
+        rightNowStart = Date.now();
+        timer.classList.remove('glitch');
+        timer.innerText = "right now";
+        return;
+      }
+
+      if (mode === 'normal') {
+        const elapsed = now - normalStartTime;
+        timer.classList.remove('glitch');
+        timer.innerText = formatTime(elapsed);
+
+        if (now - cycleStartTime >= 10000) {
+          // Switch to glitch mode
+          mode = 'glitch';
+          glitchStartTime = now;
+          glitchBase = Math.floor(Math.random() * 7200) * 1000;
+          glitchElapsed = 0;
+        }
+
+      } else if (mode === 'glitch') {
+        // Faster glitch effect — simulate by adding larger steps quickly
+        glitchElapsed += 500 + Math.floor(Math.random() * 1000); // jumps 0.5–1.5s per frame
+        timer.classList.add('glitch');
+        timer.innerText = formatTime(glitchBase + glitchElapsed);
+
+        if (now - glitchStartTime >= 5000) {
+          // Back to normal
+          mode = 'normal';
+          timer.classList.remove('glitch');
+          normalStartTime = Date.now();
+          cycleStartTime = Date.now();
+        }
+      }
+    }
+
+    setInterval(updateDisplay, 100);
+  </script>
+</body>
+</html>
