@@ -28,18 +28,73 @@
   <script>
     const timer = document.getElementById('timer');
 
-    let mode = 'normal'; // normal, glitch, rightnow
+    let mode = 'normal'; // normal, glitch
     let normalStartTime = Date.now();
+    let cycleStartTime = Date.now();
+
     let glitchStartTime = 0;
     let glitchBase = 0;
-    let glitchStep = 0;
-    let glitchSpeed = 50; // fast update speed during glitch
-    let cycleTimer = 0;
+    let glitchElapsed = 0;
 
     let isRightNow = false;
-    let rightNowTimer = 0;
+    let rightNowStart = 0;
 
     function formatTime(ms) {
       const totalSeconds = Math.floor(ms / 1000);
       const hours = Math.floor(totalSeconds / 3600);
-      const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0'
+      const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+      const seconds = String(totalSeconds % 60).padStart(2, '0');
+      return `${hours}H${minutes}m${seconds}s`;
+    }
+
+    function updateDisplay() {
+      const now = Date.now();
+
+      // Show "right now" occasionally
+      if (isRightNow) {
+        if (now - rightNowStart >= 2000) {
+          isRightNow = false;
+          normalStartTime = Date.now();
+          cycleStartTime = Date.now();
+        } else {
+          timer.innerText = "right now";
+          return;
+        }
+      } else if (Math.random() < 0.01 && mode !== 'glitch') {
+        isRightNow = true;
+        rightNowStart = Date.now();
+        timer.innerText = "right now";
+        return;
+      }
+
+      if (mode === 'normal') {
+        const elapsed = now - normalStartTime;
+        timer.innerText = formatTime(elapsed);
+
+        if (now - cycleStartTime >= 10000) {
+          // Switch to glitch mode
+          mode = 'glitch';
+          glitchStartTime = now;
+          glitchBase = Math.floor(Math.random() * 7200) * 1000; // random start up to 2 hours
+          glitchElapsed = 0;
+        }
+
+      } else if (mode === 'glitch') {
+        // Fast incrementing
+        glitchElapsed += 250; // increase fast (every 100ms * 0.25s)
+        timer.innerText = formatTime(glitchBase + glitchElapsed);
+
+        if (now - glitchStartTime >= 5000) {
+          // Back to normal
+          mode = 'normal';
+          normalStartTime = Date.now();
+          cycleStartTime = Date.now();
+        }
+      }
+    }
+
+    // Update every 100ms for responsiveness
+    setInterval(updateDisplay, 100);
+  </script>
+</body>
+</html>
