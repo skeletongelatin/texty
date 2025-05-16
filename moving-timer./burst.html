@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    html, body {
+      margin: 0;
+      background: transparent;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .static {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg==');
+      background-repeat: repeat;
+      background-size: 1px 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @keyframes shake {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(3px, -2px); }
+      50% { transform: translate(-3px, 2px); }
+      75% { transform: translate(2px, -3px); }
+      100% { transform: translate(0, 0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="static" id="static"></div>
+
+  <script>
+    const el = document.getElementById('static');
+    function triggerStatic() {
+      el.style.opacity = 0.2 + Math.random() * 0.3;
+      el.style.animation = 'shake 0.1s infinite';
+      setTimeout(() => {
+        el.style.opacity = 0;
+        el.style.animation = '';
+      }, 200 + Math.random() * 300);
+    }
+
+    setInterval(() => {
+      if (Math.random() < 0.3) triggerStatic();
+    }, 700);
+  </script>
+</body>
+</html>
