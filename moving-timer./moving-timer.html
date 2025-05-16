@@ -3,42 +3,63 @@
 <head>
   <meta charset="UTF-8">
   <title>Moving Timer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
       overflow: hidden;
       background: transparent;
     }
+
     #timer {
       position: absolute;
-      font-size: 48px;
-      font-family: 'Arial', sans-serif;
+      font-size: 64px;
+      font-family: 'Special Elite', monospace;
       color: white;
       font-weight: bold;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+      text-shadow: 2px 2px 6px rgba(0, 255, 255, 0.7), -2px -2px 6px rgba(255, 0, 255, 0.7);
     }
   </style>
 </head>
 <body>
-  <div id="timer">00H00m00s</div>
+  <div id="timer">0H00m00s</div>
 
   <script>
-    let startTime = Date.now();
     const timer = document.getElementById('timer');
-    const moveInterval = 2000; // move every 2 seconds
+    const moveInterval = 2000; // Move every 2 seconds
+    const glitchCycle = 15000; // Total cycle: 10s normal + 5s glitch
+    const glitchDuration = 5000;
+    const rightNowChance = 0.02; // 2% chance per move to trigger RIGHT NOW
+
+    let startTime = Date.now();
+    let isGlitching = false;
+    let isRightNow = false;
 
     function formatTime(ms) {
       let totalSeconds = Math.floor(ms / 1000);
-      let hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+      let hours = Math.floor(totalSeconds / 3600);
       let minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
       let seconds = String(totalSeconds % 60).padStart(2, '0');
       return `${hours}H${minutes}m${seconds}s`;
     }
 
+    function randomTimeString() {
+      let h = Math.floor(Math.random() * 24);
+      let m = String(Math.floor(Math.random() * 60)).padStart(2, '0');
+      let s = String(Math.floor(Math.random() * 60)).padStart(2, '0');
+      return `${h}H${m}m${s}s`;
+    }
+
     function updateTimer() {
-      let now = Date.now();
-      let elapsed = now - startTime;
-      timer.innerText = formatTime(elapsed);
+      if (isRightNow) return;
+
+      if (isGlitching) {
+        timer.innerText = randomTimeString();
+      } else {
+        let now = Date.now();
+        let elapsed = now - startTime;
+        timer.innerText = formatTime(elapsed);
+      }
     }
 
     function moveText() {
@@ -48,10 +69,39 @@
       const randomY = Math.random() * maxY;
       timer.style.left = `${randomX}px`;
       timer.style.top = `${randomY}px`;
+
+      // Maybe flash "RIGHT NOW"
+      if (!isRightNow && Math.random() < rightNowChance) {
+        triggerRightNow();
+      }
     }
 
-    setInterval(updateTimer, 1000);
+    function triggerRightNow() {
+      isRightNow = true;
+      timer.innerText = "RIGHT NOW";
+      timer.style.color = '#FF0044';
+      setTimeout(() => {
+        isRightNow = false;
+        timer.style.color = 'white';
+      }, 2000);
+    }
+
+    function cycleGlitchEffect() {
+      isGlitching = false;
+      setTimeout(() => {
+        isGlitching = true;
+        setTimeout(() => {
+          isGlitching = false;
+          cycleGlitchEffect(); // Restart cycle
+        }, glitchDuration);
+      }, glitchCycle - glitchDuration);
+    }
+
+    // Start intervals
+    setInterval(updateTimer, 100); // update display rapidly for glitch effect
     setInterval(moveText, moveInterval);
+    cycleGlitchEffect(); // start glitch cycle
   </script>
 </body>
 </html>
+
