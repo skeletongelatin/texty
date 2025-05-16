@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Moving Timer</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: transparent;
+    }
+    #timer {
+      position: absolute;
+      font-size: 48px;
+      font-family: 'Arial', sans-serif;
+      color: white;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+    }
+  </style>
+</head>
+<body>
+  <div id="timer">00H00m00s</div>
+
+  <script>
+    let startTime = Date.now();
+    const timer = document.getElementById('timer');
+    const moveInterval = 2000; // move every 2 seconds
+
+    function formatTime(ms) {
+      let totalSeconds = Math.floor(ms / 1000);
+      let hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+      let minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+      let seconds = String(totalSeconds % 60).padStart(2, '0');
+      return `${hours}H${minutes}m${seconds}s`;
+    }
+
+    function updateTimer() {
+      let now = Date.now();
+      let elapsed = now - startTime;
+      timer.innerText = formatTime(elapsed);
+    }
+
+    function moveText() {
+      const maxX = window.innerWidth - timer.clientWidth;
+      const maxY = window.innerHeight - timer.clientHeight;
+      const randomX = Math.random() * maxX;
+      const randomY = Math.random() * maxY;
+      timer.style.left = `${randomX}px`;
+      timer.style.top = `${randomY}px`;
+    }
+
+    setInterval(updateTimer, 1000);
+    setInterval(moveText, moveInterval);
+  </script>
+</body>
+</html>
