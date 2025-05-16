@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: transparent;
+      overflow: hidden;
+    }
+
+    .flash {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: white;
+      opacity: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="flash" class="flash"></div>
+
+  <script>
+    const flash = document.getElementById("flash");
+
+    function triggerFlash() {
+      flash.style.opacity = 0.2 + Math.random() * 0.3;
+      flash.style.transition = "opacity 0.1s";
+      setTimeout(() => {
+        flash.style.opacity = 0;
+      }, 100);
+    }
+
+    setInterval(() => {
+      if (Math.random() < 0.1) {
+        triggerFlash();
+      }
+    }, 500);
+  </script>
+</body>
+</html>
